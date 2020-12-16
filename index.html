@@ -1,0 +1,161 @@
+<div id="quiz"></div>
+<button id="submit">Submit Quiz</button>
+<div id="results"></div>
+
+<style>
+  body{
+	font-size: 20px;
+	font-family: sans-serif;
+	color: #333;
+}
+.question{
+	font-weight: 600;
+}
+.answers {
+  margin-bottom: 20px;
+}
+.answers label{
+  display: block;
+}
+#submit{
+	font-family: sans-serif;
+	font-size: 20px;
+	background-color: #279;
+	color: #fff;
+	border: 0px;
+	border-radius: 3px;
+	padding: 20px;
+	cursor: pointer;
+	margin-bottom: 20px;
+}
+#submit:hover{
+	background-color: #38a;
+}
+</style>
+
+
+<script>(function(){
+    function buildQuiz(){
+      // variable to store the HTML output
+      const output = [];
+  
+      // for each question...
+      myQuestions.forEach(
+        (currentQuestion, questionNumber) => {
+  
+          // variable to store the list of possible answers
+          const answers = [];
+  
+          // and for each available answer...
+          for(letter in currentQuestion.answers){
+  
+            // ...add an HTML radio button
+            answers.push(
+              `<label>
+                <input type="radio" name="question${questionNumber}" value="${letter}">
+                ${letter} :
+                ${currentQuestion.answers[letter]}
+              </label>`
+            );
+          }
+  
+          // add this question and its answers to the output
+          output.push(
+            `<div class="question"> ${currentQuestion.question} </div>
+            <div class="answers"> ${answers.join('')} </div>`
+          );
+        }
+      );
+  
+      // finally combine our output list into one string of HTML and put it on the page
+      quizContainer.innerHTML = output.join('');
+    }
+  
+    function showResults(){
+  
+      // gather answer containers from our quiz
+      const answerContainers = quizContainer.querySelectorAll('.answers');
+  
+      // keep track of user's answers
+      let numCorrect = 0;
+  
+      // for each question...
+      myQuestions.forEach( (currentQuestion, questionNumber) => {
+  
+        // find selected answer
+        const answerContainer = answerContainers[questionNumber];
+        const selector = `input[name=question${questionNumber}]:checked`;
+        const userAnswer = (answerContainer.querySelector(selector) || {}).value;
+  
+        // if answer is correct
+        if(userAnswer === currentQuestion.correctAnswer){
+          // add to the number of correct answers
+          numCorrect++;
+  
+          // color the answers green
+          answerContainers[questionNumber].style.color = 'lightgreen';
+        }
+        // if answer is wrong or blank
+        else{
+          // color the answers red
+          answerContainers[questionNumber].style.color = 'red';
+        }
+      });
+  
+      // show number of correct answers out of total
+      if(numCorrect/myQuestions.length == 1){
+        quizContainer.innerHTML = `<img src="https://i1.wp.com/nahbnow.com/wp-content/uploads/2018/08/iStock-692279620.jpg" alt="GREEN CHECK" style="max-width:100%; display: block; margin-left: auto; margin-right: auto;">`;
+        
+      }else{
+        quizContainer.innerHTML = `<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Red_X.svg/768px-Red_X.svg.png" alt="RED X" style="max-width:100%; display: block; margin-left: auto; margin-right: auto;">`;
+
+      }
+
+      //quizContainer.innerHTML = `${numCorrect} out of ${myQuestions.length}`;
+      submitButton.style.display = "none";
+    }
+  
+    const quizContainer = document.getElementById('quiz');
+    const resultsContainer = document.getElementById('results');
+    const submitButton = document.getElementById('submit');
+    const myQuestions = [
+      {
+        question: "In the last 24 hours have you had a fever and/or taken medications for a fever?",
+        answers: {
+          a: "Yes",
+          b: "No"
+        },
+        correctAnswer: "b"
+      },
+      {
+        question: "In the last 7 days have you had symptoms of a lower respiratory illness (cough, difficulty breathing, loss of taste or smell, sore throat, nasal drainage, chills or shaking, muscle aches, headache unexplained fatigue, nausea or vomiting, diarrhea)?",
+        answers: {
+          a: "Yes",
+          b: "No"
+        },
+        correctAnswer: "b"
+      },
+      {
+        question: "In the past 14 days have you been in close contact with a person known/suspected to have Coronavirus (COVID-19)?",
+        answers: {
+          a: "Yes",
+          b: "No"
+        },
+        correctAnswer: "b"
+      },
+      {
+        question: "Have you been diagnosed (COVID test positive) within the past 14 days, and/or currently being tested for COVID-19? (expection-pre-procedure testing)",
+        answers: {
+          a: "Yes",
+          b: "No"
+        },
+        correctAnswer: "b"
+      }
+    ];
+  
+    // Kick things off
+    buildQuiz();
+  
+    // Event listeners
+    submitButton.addEventListener('click', showResults);
+  })();</script>
